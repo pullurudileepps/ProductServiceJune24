@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Service
+@Service("fakeStore")
 public class FakeStoreProductService implements ProductService{
 //    AppConfig restTemplateConfig;
     WebClientConfig webClientConfig;
@@ -75,6 +75,27 @@ public class FakeStoreProductService implements ProductService{
         }
         return productResponseDtoList;
     }
+
+    @Override
+    public Product createProduct(String title, String description, double price, String image, String categoryName) {
+        return null;
+    }
+
+    @Override
+    public Product UpdatePrice(int id, double price) {
+        return null;
+    }
+
+    @Override
+    public Product UpdateImage(int id, String image) {
+        return null;
+    }
+
+    @Override
+    public void deleteProduct(int id) {
+
+    }
+
     private Product convertProductDtoToProduct(ProductDto productDto, int i) {
         Product product = new Product();
         product.setId(productDto.getId());
