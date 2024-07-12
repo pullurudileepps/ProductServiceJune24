@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("categories")
+@RequestMapping("/categories")
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -22,12 +22,12 @@ public class CategoryController {
         return this.categoryService.getCategoryById(id);
     }
 
-    @PostMapping("/")
+    @PostMapping("/createCategory")
     public Category createCategory(@RequestBody CategoryRequestDto requestDto) {
         return this.categoryService.createCategory(requestDto.getCategoryName());
     }
 
-    @PutMapping("/")
+    @PutMapping("/updateCategory")
     public Category updateCategory(@RequestBody Category requestDto) {
         return this.categoryService.updateCategory(requestDto.getId(), requestDto.getName());
     }

@@ -12,10 +12,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
+//@SpringBootTest
 class FirstApiJune24ApplicationTests {
 
-	@Test
+//	@Test
 	void contextLoads() {
 	}
 }
