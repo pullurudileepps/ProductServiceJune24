@@ -6,8 +6,12 @@ import com.example.FirstAPIJune24.Model.Product;
 import com.example.FirstAPIJune24.Repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("selfProduct")
@@ -67,5 +71,35 @@ public class SelfProductServiceImpl implements ProductService {
         int categoryId = product.getCategory().getId();
         productRepository.deleteById(productId);
         categoryService.deleteCategoryById(categoryId);
+    }
+
+    @Override
+    public Page<Product> pagination(int pageSize, int pageNumber) {
+        return this.productRepository.findAll(PageRequest.of(pageNumber, pageSize));
+    }
+
+    @Override
+    public Page<Product> paginationSort(int pageSize, int pageNumber, String sortBy) throws IllegalArgumentException {
+        if (pageSize <= 0 || pageNumber < 0) {
+            throw new IllegalArgumentException("Invalid page size or page number.");
+        }
+        String[] split = sortBy.split(",");
+        List<Sort.Order> orders = new ArrayList<>();
+
+        if (split.length % 2 != 0) {
+            throw new IllegalArgumentException("Invalid sortBy format. It should be in 'field,order' pairs.");
+        }
+        try {
+            for (int i = 0; i < split.length; i += 2) {
+                String property = split[i].trim();
+                String direction = split[i + 1].trim();
+
+                Sort.Direction sortDirection = direction.equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+                orders.add(new Sort.Order(sortDirection, property));
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Invalid sortBy format. It should be in 'field,order' pairs.");
+        }
+        return productRepository.findAll(PageRequest.of(pageNumber, pageSize, Sort.by(orders)));
     }
 }

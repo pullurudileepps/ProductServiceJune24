@@ -1,6 +1,5 @@
 package com.example.FirstAPIJune24.Service;
 
-import com.example.FirstAPIJune24.Config.AppConfig;
 import com.example.FirstAPIJune24.Config.WebClientConfig;
 import com.example.FirstAPIJune24.Dtos.ProductDto;
 import com.example.FirstAPIJune24.Dtos.ProductResponseDto;
@@ -8,14 +7,12 @@ import com.example.FirstAPIJune24.Model.Category;
 import com.example.FirstAPIJune24.Model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service("fakeStore")
@@ -108,5 +105,15 @@ public class FakeStoreProductService implements ProductService{
         category.setName(productDto.getCategory());
         product.setCategory(category);
         return product;
+    }
+
+    @Override
+    public Page<Product> pagination(int pageSize, int pageNumber) {
+        return null;
+    }
+
+    @Override
+    public Page<Product> paginationSort(int pageSize, int pageNumber, String sortBy) throws IllegalArgumentException {
+        return null;
     }
 }

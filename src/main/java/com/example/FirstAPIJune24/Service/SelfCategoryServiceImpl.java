@@ -5,6 +5,8 @@ import com.example.FirstAPIJune24.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service("selfCategory")
 public class SelfCategoryServiceImpl implements CategoryService {
 
@@ -22,6 +24,10 @@ public class SelfCategoryServiceImpl implements CategoryService {
 
     @Override
     public Category createCategory(String categoryName) {
+        Optional<Category> existingCategory = this.categoryRepository.findCategoriesByName(categoryName);
+        if (existingCategory.isPresent()) {
+            return existingCategory.get();
+        }
         Category category = new Category();
         category.setName(categoryName);
         return this.categoryRepository.save(category);

@@ -6,6 +6,8 @@ import com.example.FirstAPIJune24.Model.Product;
 import com.example.FirstAPIJune24.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,6 +65,24 @@ public class ProductController {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
+        }
+    }
+    @GetMapping("/pagination")
+    public ResponseEntity<Page<Product>> pagination(@RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                                        @RequestParam(value = "pageNum", defaultValue = "1") int pageNum){
+
+        Page<Product> products = productService.pagination(pageSize, pageNum);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+    @GetMapping("/pagination-sort")
+    public ResponseEntity<Page<Product>> paginationSort(@RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
+                                                        @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                                        @RequestParam("sortBy") String sortBy) {
+        try {
+            Page<Product> sortedProduct = productService.paginationSort(pageSize, pageNum, sortBy);
+            return new ResponseEntity<>(sortedProduct, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
