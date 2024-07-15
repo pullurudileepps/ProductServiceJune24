@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -17,18 +18,23 @@ import java.util.List;
 
 @Service("fakeStore")
 public class FakeStoreProductService implements ProductService{
-//    AppConfig restTemplateConfig;
+    // AppConfig restTemplateConfig;
     WebClientConfig webClientConfig;
+    RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public FakeStoreProductService(WebClientConfig webClientConfig) {
+    public FakeStoreProductService(RedisTemplate<String, Object> redisTemplate, WebClientConfig webClientConfig) {
+        this.redisTemplate = redisTemplate;
         this.webClientConfig = webClientConfig;
     }
 
     @Override
     public ProductResponseDto getProductById(int id) {
-        ProductResponseDto productResponseDto = new ProductResponseDto();
-//        ProductDto productDto = this.restTemplateConfig.restTemplate().getForObject("https://fakestoreapi.com/products/" + id, ProductDto.class);
+        /* ProductDto productDto = this.restTemplateConfig.restTemplate().getForObject("https://fakestoreapi.com/products/" + id, ProductDto.class);*/
+        ProductResponseDto productObj = (ProductResponseDto) this.redisTemplate.opsForHash().get("PRODUCTS", "products_" + id);
+        if(productObj != null){
+            return productObj;
+        }
         ProductDto productDto = webClientConfig.webClientBuilder()
                 .build()
                 .get()
@@ -41,7 +47,9 @@ public class FakeStoreProductService implements ProductService{
             int idx = 0;
             product = convertProductDtoToProduct(productDto, ++idx);
         }
+        ProductResponseDto productResponseDto = new ProductResponseDto();
         productResponseDto.setProduct(product);
+        this.redisTemplate.opsForHash().put("PRODUCTS", "products_" + id, productResponseDto);
         return productResponseDto;
     }
 
@@ -50,8 +58,8 @@ public class FakeStoreProductService implements ProductService{
         int idx = 0;
         String url = "https://fakestoreapi.com/products/";
 
-//        ResponseEntity<List<ProductDto>> response = this.restTemplateConfig.restTemplate().exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ProductDto>>(){});
-//        List<ProductDto> productDtoList = response.getBody()
+        //ResponseEntity<List<ProductDto>> response = this.restTemplateConfig.restTemplate().exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<ProductDto>>(){});
+        //List<ProductDto> productDtoList = response.getBody()
 
         List<ProductDto> productDtoList = webClientConfig.webClientBuilder()
                 .build()
