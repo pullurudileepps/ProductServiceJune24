@@ -20,21 +20,20 @@ import java.util.List;
 public class FakeStoreProductService implements ProductService{
     // AppConfig restTemplateConfig;
     WebClientConfig webClientConfig;
-    RedisTemplate<String, Object> redisTemplate;
+//    RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public FakeStoreProductService(RedisTemplate<String, Object> redisTemplate, WebClientConfig webClientConfig) {
-        this.redisTemplate = redisTemplate;
+    public FakeStoreProductService(WebClientConfig webClientConfig) {
         this.webClientConfig = webClientConfig;
     }
 
     @Override
     public ProductResponseDto getProductById(int id) {
         /* ProductDto productDto = this.restTemplateConfig.restTemplate().getForObject("https://fakestoreapi.com/products/" + id, ProductDto.class);*/
-        ProductResponseDto productObj = (ProductResponseDto) this.redisTemplate.opsForHash().get("PRODUCTS", "products_" + id);
-        if(productObj != null){
-            return productObj;
-        }
+//        ProductResponseDto productObj = (ProductResponseDto) this.redisTemplate.opsForHash().get("PRODUCTS", "products_" + id);
+//        if(productObj != null){
+//            return productObj;
+//        }
         ProductDto productDto = webClientConfig.webClientBuilder()
                 .build()
                 .get()
@@ -49,7 +48,7 @@ public class FakeStoreProductService implements ProductService{
         }
         ProductResponseDto productResponseDto = new ProductResponseDto();
         productResponseDto.setProduct(product);
-        this.redisTemplate.opsForHash().put("PRODUCTS", "products_" + id, productResponseDto);
+//        this.redisTemplate.opsForHash().put("PRODUCTS", "products_" + id, productResponseDto);
         return productResponseDto;
     }
 
