@@ -5,10 +5,10 @@ import com.example.FirstAPIJune24.Dtos.ProductDto;
 import com.example.FirstAPIJune24.Dtos.ProductResponseDto;
 import com.example.FirstAPIJune24.Model.Category;
 import com.example.FirstAPIJune24.Model.Product;
+import com.example.FirstAPIJune24.exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -20,20 +20,21 @@ import java.util.List;
 public class FakeStoreProductService implements ProductService{
     // AppConfig restTemplateConfig;
     WebClientConfig webClientConfig;
-//    RedisTemplate<String, Object> redisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public FakeStoreProductService(WebClientConfig webClientConfig) {
+    public FakeStoreProductService(RedisTemplate<String, Object> redisTemplate, WebClientConfig webClientConfig) {
+        this.redisTemplate = redisTemplate;
         this.webClientConfig = webClientConfig;
     }
 
     @Override
     public ProductResponseDto getProductById(int id) {
         /* ProductDto productDto = this.restTemplateConfig.restTemplate().getForObject("https://fakestoreapi.com/products/" + id, ProductDto.class);*/
-//        ProductResponseDto productObj = (ProductResponseDto) this.redisTemplate.opsForHash().get("PRODUCTS", "products_" + id);
-//        if(productObj != null){
-//            return productObj;
-//        }
+        ProductResponseDto productObj = (ProductResponseDto) this.redisTemplate.opsForHash().get("PRODUCTS", "products_" + id);
+        if(productObj != null){
+            return productObj;
+        }
         ProductDto productDto = webClientConfig.webClientBuilder()
                 .build()
                 .get()
@@ -48,7 +49,7 @@ public class FakeStoreProductService implements ProductService{
         }
         ProductResponseDto productResponseDto = new ProductResponseDto();
         productResponseDto.setProduct(product);
-//        this.redisTemplate.opsForHash().put("PRODUCTS", "products_" + id, productResponseDto);
+        this.redisTemplate.opsForHash().put("PRODUCTS", "products_" + id, productResponseDto);
         return productResponseDto;
     }
 
@@ -81,7 +82,7 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public Product createProduct(String title, String description, double price, String image, String categoryName) {
+    public Product createProduct(String title, String description, double price, String image, String categoryName, int availableQuantity) {
         return null;
     }
 
@@ -121,6 +122,16 @@ public class FakeStoreProductService implements ProductService{
 
     @Override
     public Page<Product> paginationSort(int pageSize, int pageNumber, String sortBy) throws IllegalArgumentException {
+        return null;
+    }
+
+    @Override
+    public List<Product> getProductsById(List<Integer> productIds) throws ProductNotFoundException {
+        return List.of();
+    }
+
+    @Override
+    public Product updateAvailableQuantity(int productId, int updatedQuantity) throws ProductNotFoundException {
         return null;
     }
 }

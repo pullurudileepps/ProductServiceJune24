@@ -9,4 +9,5 @@ public class ProductRequestDto {
     private String description;
     private String image;
     private String categoryName;
+    private int availableQuantity;
 }

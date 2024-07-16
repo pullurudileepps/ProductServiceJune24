@@ -4,6 +4,7 @@ import com.example.FirstAPIJune24.Dtos.ProductResponseDto;
 import com.example.FirstAPIJune24.Model.Category;
 import com.example.FirstAPIJune24.Model.Product;
 import com.example.FirstAPIJune24.Repository.ProductRepository;
+import com.example.FirstAPIJune24.exceptions.ProductNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service("selfProduct")
 public class SelfProductServiceImpl implements ProductService {
@@ -40,7 +42,7 @@ public class SelfProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(String title, String description, double price, String image,String categoryName) {
+    public Product createProduct(String title, String description, double price, String image,String categoryName, int availableQuantity) {
         Category category = this.categoryService.createCategory(categoryName);
         Product product = new Product();
         product.setTitle(title);
@@ -48,6 +50,7 @@ public class SelfProductServiceImpl implements ProductService {
         product.setPrice(price);
         product.setImage(image);
         product.setCategory(category);
+        product.setQty(availableQuantity);
         return this.productRepository.save(product);
     }
 
@@ -68,7 +71,7 @@ public class SelfProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(int productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("Product not found"));
-        int categoryId = product.getCategory().getId();
+        int categoryId = (int) product.getCategory().getId();
         productRepository.deleteById(productId);
         categoryService.deleteCategoryById(categoryId);
     }
@@ -101,5 +104,20 @@ public class SelfProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Invalid sortBy format. It should be in 'field,order' pairs.");
         }
         return productRepository.findAll(PageRequest.of(pageNumber, pageSize, Sort.by(orders)));
+    }
+
+    @Override
+    public List<Product> getProductsById(List<Integer> productIds) throws ProductNotFoundException {
+        Optional<List<Product>> productOptional = this.productRepository.findAllByIdIn(productIds);
+        return productOptional.orElseGet(ArrayList::new);
+
+    }
+
+    @Override
+    public Product updateAvailableQuantity(int productId, int updatedQuantity) throws ProductNotFoundException {
+        ProductResponseDto productById = getProductById(productId);
+        Product product = productById.getProduct();
+        product.setQty(updatedQuantity);
+        return this.productRepository.save(product);
     }
 }

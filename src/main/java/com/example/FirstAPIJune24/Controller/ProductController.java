@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -43,7 +44,7 @@ public class ProductController {
         if(!authUtils.validateToken(token)){
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
-        Product product = this.productService.createProduct(requestDto.getTitle(), requestDto.getDescription(), requestDto.getPrice(), requestDto.getImage(), requestDto.getCategoryName());
+        Product product = this.productService.createProduct(requestDto.getTitle(), requestDto.getDescription(), requestDto.getPrice(), requestDto.getImage(), requestDto.getCategoryName(),requestDto.getAvailableQuantity());
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 
@@ -85,4 +86,32 @@ public class ProductController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PatchMapping("/{id}/available_quantity")
+    public UpdateQuantityResponseDTO updateAvailableQuantity(@PathVariable("id") int productId, @RequestBody UpdateQuantityRequestDTO requestDTO) {
+        int quantity = requestDTO.getQuantity();
+        UpdateQuantityResponseDTO responseDTO = new UpdateQuantityResponseDTO();
+        try {
+            Product product = this.productService.updateAvailableQuantity(productId, quantity);
+            responseDTO.setProduct(product);
+            responseDTO.setMessage("Quantity of product with ID: " + productId + ", has been UPDATED");
+//            responseDTO.setResponseStatus(ResponseStatus.SUCCESS);
+        } catch (Exception e) {
+            responseDTO.setMessage(e.getMessage());
+//            responseDTO.setResponseStatus(ResponseStatus.FAILURE);
+        }
+        return responseDTO;
+    }
+    @PostMapping("/details")
+    public List<Product> getProductsById(@RequestBody GetProductsByIdRequestDTO requestDTO) {
+        List<Integer> productIds = requestDTO.getProductIds();
+        System.out.println(productIds);
+        List<Product> products = new ArrayList<>();
+        try {
+            products = this.productService.getProductsById(productIds);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return products;
+    }
+
 }

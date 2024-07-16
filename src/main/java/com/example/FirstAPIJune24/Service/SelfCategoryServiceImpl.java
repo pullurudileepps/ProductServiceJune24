@@ -19,7 +19,8 @@ public class SelfCategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryById(int id) {
-        return this.categoryRepository.findCategoriesById(id);
+        Optional<Category> categoryOptional = this.categoryRepository.findCategoriesById(id);
+        return categoryOptional.orElseGet(Category::new);
     }
 
     @Override
@@ -35,7 +36,8 @@ public class SelfCategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(int id, String categoryName) {
-        Category category = this.categoryRepository.findCategoriesById(id);
+        Optional<Category> categoryOptional = this.categoryRepository.findCategoriesById(id);
+        Category category = categoryOptional.get();
         category.setName(categoryName);
         return this.categoryRepository.save(category);
     }
