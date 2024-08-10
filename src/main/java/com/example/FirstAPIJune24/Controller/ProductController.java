@@ -94,10 +94,8 @@ public class ProductController {
             Product product = this.productService.updateAvailableQuantity(productId, quantity);
             responseDTO.setProduct(product);
             responseDTO.setMessage("Quantity of product with ID: " + productId + ", has been UPDATED");
-//            responseDTO.setResponseStatus(ResponseStatus.SUCCESS);
         } catch (Exception e) {
             responseDTO.setMessage(e.getMessage());
-//            responseDTO.setResponseStatus(ResponseStatus.FAILURE);
         }
         return responseDTO;
     }

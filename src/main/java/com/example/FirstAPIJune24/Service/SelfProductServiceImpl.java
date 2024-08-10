@@ -3,6 +3,7 @@ package com.example.FirstAPIJune24.Service;
 import com.example.FirstAPIJune24.Dtos.ProductResponseDto;
 import com.example.FirstAPIJune24.Model.Category;
 import com.example.FirstAPIJune24.Model.Product;
+import com.example.FirstAPIJune24.Projection.ProductInfo;
 import com.example.FirstAPIJune24.Repository.ProductRepository;
 import com.example.FirstAPIJune24.exceptions.ProductNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,6 +33,20 @@ public class SelfProductServiceImpl implements ProductService {
     public ProductResponseDto getProductById(int id) {
         ProductResponseDto responseDto = new ProductResponseDto();
         Product product = this.productRepository.findProductById(id);
+        /*
+        Filter columns from the table using Projection (SQL/HQL Query)
+        Optional<ProductInfo> productInfo = this.productRepository.filterProductById(id);
+        if(productInfo.isPresent()){
+            System.out.println("data persist");
+            ProductInfo prod = productInfo.get();
+
+            System.out.println("SelfProductServiceImpl{" +
+                    "id=" + prod.getId() +
+                    ", title=" + prod.getTitle() +
+                    ". description=" + prod.getDescription() +
+                    '}');
+
+        }*/
         responseDto.setProduct(product);
         return responseDto;
     }

@@ -7,5 +7,4 @@ import lombok.Data;
 public class UpdateQuantityResponseDTO {
     private Product product;
     private String message;
-//    private ResponseStatus responseStatus;
 }
